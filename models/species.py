@@ -1,4 +1,5 @@
 from pkg_init import db,ma
+from marshmallow.validate import Length
 from marshmallow import fields
 
 class Specie(db.Model):
@@ -13,6 +14,8 @@ class Specie(db.Model):
     comments=db.relationship("Comment", backref="species", cascade="all, delete")
 
 class SpecieSchema(ma.Schema):
+    specie_name=fields.String(validate=Length(min=3))
+    
     class Meta:
         fields=("id","specie_name","comments","votes")
     

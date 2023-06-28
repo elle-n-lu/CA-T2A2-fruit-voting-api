@@ -1,5 +1,5 @@
 from pkg_init import db, ma
-from marshmallow import fields
+from marshmallow import  fields, validates
 
 class Comment(db.Model):
     __tablename__='comments'
@@ -17,3 +17,11 @@ class CommentSchema(ma.Schema):
         fields=("id","parent_comment_id","message", "specie","user_id")
     
     specie=fields.Nested("SpecieSchema")
+    
+    @validates('parent_comment_id')
+    def validate_parent_comment_id(self, parent_comment_id):
+        parent_comment_check= Comment.query.filter_by(id=parent_comment_id).first()
+        comment=Comment.query.filter_by(parent_comment_id=parent_comment_id).first()
+        if not parent_comment_check:
+            db.session.delete(comment)
+            db.session.commit()

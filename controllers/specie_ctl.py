@@ -1,5 +1,5 @@
 
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from flask_jwt_extended import  jwt_required
 from sqlalchemy import exc, select
 from flask import Blueprint, request
 from sqlalchemy import func
@@ -17,25 +17,22 @@ app_specie = Blueprint("specie", __name__, url_prefix='/fruit/<int:id>')
 @app_specie.route("/species", methods=['POST'])
 @jwt_required()
 def create_specie(id):
-    try:
-        # check admin login
-        admin_required()
-        # check if the fruit which the specie belong exist, error if not
-        fruit=Fruit.query.filter_by(id=id).first()
-        if not fruit:
-            return {"error":"fruit not exist"}
-        # add user data in db
-        specie = SpecieSchema().load(request.form)
-        new_specie = Specie(
-            specie_name=specie['specie_name'],
-            fruit_id=id
-        )
-        db.session.add(new_specie)
-        db.session.commit()
-        # return a value to show or use
-        return SpecieSchema().dump(new_specie), 201
-    except (KeyError,ValidationError):
-        return {'error': "['specie_name'] data required"}
+    # check admin login
+    admin_required()
+    # check if the fruit which the specie belong exist, error if not
+    fruit=Fruit.query.filter_by(id=id).first()
+    if not fruit:
+        return {"error":"fruit not exist"}
+    # add user data in db
+    specie = SpecieSchema().load(request.form)
+    new_specie = Specie(
+        specie_name=specie['specie_name'],
+        fruit_id=id
+    )
+    db.session.add(new_specie)
+    db.session.commit()
+    # return a value to show or use
+    return SpecieSchema().dump(new_specie), 201
 
 # retrive all species data
 @app_specie.route("/species", methods=['GET'])
@@ -43,7 +40,7 @@ def get_species(id):
     
     stmt = db.select(Specie)
     species = db.session.scalars(stmt)
-    return SpecieSchema(many=True).dump(species)
+    return SpecieSchema(many=True, exclude=['votes','comments']).dump(species)
 
 # retrieve single specie data
 @app_specie.route("/species/<int:specie_id>", methods=['GET'])

@@ -1,4 +1,8 @@
-from flask import Flask
+from flask import Flask, jsonify
+from marshmallow.exceptions import ValidationError
+from werkzeug.exceptions import BadRequest
+from sqlalchemy import exc
+from psycopg2.errors import UniqueViolation
 from pkg_init import db,ma, bcrypt, jwt
 from cli_commands.command_ctl import db_commands
 from controllers.admin_ctl import app_admin
@@ -19,10 +23,6 @@ def setup():
     bcrypt.init_app(app)
     jwt.init_app(app)
 
-    @app.errorhandler(401)
-    def unauthorised(err):
-        return {"error":"You are not authorised"}, 401
-    
     @app.route("/",methods=['GET'])
     def say_hello():
         return 'hi there'
@@ -30,6 +30,25 @@ def setup():
     app.register_blueprint(db_commands)
     for controller in controllers:
         app.register_blueprint(controller)
+
+    @app.errorhandler(401)
+    def unauthorised(err):
+        return {"error":"You are not authorised"}, 401
+    
+    @app.errorhandler(BadRequest)
+    def default_error(e):
+        return jsonify({'error': e.description}), 400
+
+    @app.errorhandler(KeyError)
+    def bad_request(err):
+        return jsonify({'error': f'The field {err} is required'}), 400
+
+    @app.errorhandler(ValidationError)
+    def bad_request(err):
+        return {'error':err.__dict__["messages"]}, 400
+
+
+    
 
     return app
     

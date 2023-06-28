@@ -20,23 +20,21 @@ def admin_required():
 # admin login
 @app_admin.route("/admin",methods=['POST'])
 def admin_login():
-    try:    
-        # retrieve input data
-        user_info=AdminSchema().load(request.form)
-        user=Admin.query.filter_by(email=user_info['email']).first()
-        # error if admin not exist
-        if not user :
-            return {"error":"user not exist"},404
-        # error if password incorrect
-        elif not bcrypt.check_password_hash(user.password,user_info['password']):
-            return {"error":"Incorrect username and password"}, 402
-        # generate token for further use
-        expire=timedelta(days=1)
-        access_token=create_access_token(identity=user.id,expires_delta=expire)
-        # return data for further use
-        return {"user":user.username,"id":user.id, "token":access_token}
-    except KeyError:
-        return {"error":"email and password are required"}, 400
+    # retrieve input data
+    user_info=AdminSchema().load(request.form)
+    user=Admin.query.filter_by(email=user_info['email']).first()
+    # error if admin not exist
+    print(user.password,user_info['password'],'sad',bcrypt.check_password_hash(user.password,user_info['password']))
+    if not user :
+        return {"error":"user not exist"},404
+    # error if password incorrect
+    elif not bcrypt.check_password_hash(user.password,user_info['password']):
+        return {"error":"Incorrect username and password"}, 402
+    # generate token for further use
+    expire=timedelta(days=1)
+    access_token=create_access_token(identity=user.id,expires_delta=expire)
+    # return data for further use
+    return {"user":user.username,"id":user.id, "token":access_token}
 
 # update user info
 @app_admin.route("/admin",methods=['PUT'])
@@ -47,9 +45,10 @@ def update_user():
     # get use input
     user_info= AdminSchema().load(request.form)
     # update user information
-    admin.username= user_info['username']
-    admin.password=user_info["password"]
-    admin.email=user_info["email"]
+    admin.username= user_info.get("username", admin.username)
+    if user_info.get("password", admin.password) != admin.password:
+        admin.password=bcrypt.generate_password_hash(user_info.get("password", admin.password)).decode('utf-8')
+    admin.email=user_info.get("email", admin.email)
     db.session.commit()
     return AdminSchema().dump(admin), 201
 

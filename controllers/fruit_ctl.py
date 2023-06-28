@@ -1,7 +1,6 @@
 
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from flask_jwt_extended import  jwt_required
 from sqlalchemy import exc
-from marshmallow.exceptions import ValidationError
 from flask import Blueprint, request
 from pkg_init import db
 from controllers.admin_ctl import admin_required
@@ -13,21 +12,18 @@ app_fruit=Blueprint("fruit",__name__)
 @app_fruit.route("/fruit",methods=['POST'])
 @jwt_required()
 def create_fruit():
-    try:
-        # check admin login
-        admin=admin_required()
-        # retrieve requested formdata
-        fruit_name= FruitSchema().load(request.form)
-        # add new fruit in db
-        new_fruit= Fruit(
-            fruit_name=fruit_name["fruit_name"],
-            admin_id=admin.id
-        )
-        db.session.add(new_fruit)
-        db.session.commit()
-        return FruitSchema().dump(new_fruit), 201
-    except (KeyError,ValidationError ):
-        return {'error':"['fruit_name'] required"}
+    # check admin login
+    admin=admin_required()
+    # retrieve requested formdata
+    fruit_name= FruitSchema().load(request.form)
+    # add new fruit in db
+    new_fruit= Fruit(
+        fruit_name=fruit_name["fruit_name"],
+        admin_id=admin.id
+    )
+    db.session.add(new_fruit)
+    db.session.commit()
+    return FruitSchema().dump(new_fruit), 201
 
 # retrieve all fruit data
 @app_fruit.route("/fruit",methods=['GET'])
@@ -39,7 +35,7 @@ def get_fruit():
 # update single specie
 @app_fruit.route("/fruit/<int:fruit_id>",methods=['PUT'])
 @jwt_required()
-def update_fruit(id,fruit_id):
+def update_fruit(fruit_id):
     # check admin authentication
     admin_required()
     # check if fruit exist
@@ -49,14 +45,14 @@ def update_fruit(id,fruit_id):
     if not fruit_check:
         return {"error":"fruit not found"}
     # update fruit name
-    fruit_check.fruit_name=specie["fruit_name"]
+    fruit_check.fruit_name=specie.get("fruit_name", fruit_check.fruit_name)
     db.session.commit()
     return FruitSchema().dump(fruit_check), 201
 
 # delete single fruit
 @app_fruit.route("/fruit/<int:fruit_id>",methods=['DELETE'])
 @jwt_required()
-def delete_fruit(id,fruit_id):
+def delete_fruit(fruit_id):
     # check admin authentication
     admin_required()
     # check if fruit exist

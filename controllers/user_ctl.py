@@ -35,10 +35,10 @@ def get_user_details():
     return jsonify(res)
 
 # update user info
-@app_user.route("/my",methods=['PUT'])
+@app_user.route("/my/<int:user_id>",methods=['PUT'])
 @jwt_required()
-def update_user():
-    user_id=login_required()
+def update_user(user_id):
+    owner_required(user_id)
     # check if user already exist, error if not
     user_check=User.query.filter_by(id=user_id).first()
     # get use input
@@ -46,9 +46,10 @@ def update_user():
     if not user_check:
         return {"error":"user not found"}
     # update user information
-    user_check.username=user_info["username"]
-    user_check.password=user_info["password"]
-    user_check.email=user_info["email"]
+    user_check.username=user_info.get("username", user_check.username)
+    if user_info.get("password", user_check.password) != user_check.password:
+        user_check.password=bcrypt.generate_password_hash(user_info.get("password", user_check.password)).decode('utf-8')
+    user_check.email=user_info.get("email", user_check.email)
     db.session.commit()
     return UserSchema().dump(user_check), 201
 
@@ -71,40 +72,32 @@ def registe_users():
     # error if email already exists
     except exc.IntegrityError:
         return {'error':'email already exist'},409
-    # error if requested fields don't meet requirements
-    except KeyError:
-        s=[i for i in request.form]
-        m=[i for i in ['username','password','email'] if i not in s]
-        return {'error':f'{m} is required'},400
 
 # login
 @app_user.route("/login",methods=['POST'])
 def login_users():   
-    try:    
-        # retrive user input
-        user_info=UserSchema().load(request.form)
-        # check if user exist filter by email
-        user=User.query.filter_by(email=user_info['email']).first()
-        # error if not exist
-        if not user :
-            return {"error":"user not exist"},404
-        # error if password incorrect
-        elif not bcrypt.check_password_hash(user.password,user_info['password']):
-            return {"error":"Incorrect username and password"}, 402
-        # generate token
-        expire=timedelta(days=1)
-        access_token=create_access_token(identity=user.id,expires_delta=expire)
-        # return data for further using
-        return {"user":user.username,"id":user.id, "token":access_token}
-    except KeyError:
-        return {"error":"email and password are required"}, 400
+    # retrive user input
+    user_info=UserSchema().load(request.form)
+    # check if user exist filter by email
+    user=User.query.filter_by(email=user_info['email']).first()
+    # error if not exist
+    if not user :
+        return {"error":"user not exist"},404
+    # error if password incorrect
+    elif not bcrypt.check_password_hash(user.password,user_info['password']):
+        return {"error":"Incorrect username and password"}, 402
+    # generate token
+    expire=timedelta(days=1)
+    access_token=create_access_token(identity=user.id,expires_delta=expire)
+    # return data for further using
+    return {"user":user.username,"id":user.id, "token":access_token}
     
 # delete user account
-@app_user.route("/userdelete",methods=['DELETE'])
+@app_user.route("/userdelete/<int:user_id>",methods=['DELETE'])
 @jwt_required()
-def delete_userself():  
-    # check if user login and exist
-    user_id = get_jwt_identity()
+def delete_userself(user_id): 
+    # owner_required(user_id) 
+    # check if user exist
     user=User.query.filter_by(id=user_id).first()
     if not user:
         return {"error":"user not exist"}

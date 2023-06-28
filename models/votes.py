@@ -12,6 +12,8 @@ class Vote(db.Model):
 
     
 class VoteSchema(ma.Schema):
+    vote_status=fields.String(required=True)
+
     class Meta:
         fields=("id","vote_status","specie","user_id")
     
