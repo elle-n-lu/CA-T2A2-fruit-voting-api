@@ -3,7 +3,7 @@ from marshmallow.exceptions import ValidationError
 from werkzeug.exceptions import BadRequest
 from sqlalchemy import exc
 from psycopg2.errors import UniqueViolation
-from pkg_init import db,ma, bcrypt, jwt
+from pkg_init import db,ma, bcrypt, jwt, mail
 from cli_commands.command_ctl import db_commands
 from controllers.admin_ctl import app_admin
 from controllers.user_ctl import app_user
@@ -22,6 +22,7 @@ def setup():
     ma.init_app(app)
     bcrypt.init_app(app)
     jwt.init_app(app)
+    mail.init_app(app)
 
     @app.route("/",methods=['GET'])
     def say_hello():

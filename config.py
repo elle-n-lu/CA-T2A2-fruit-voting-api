@@ -1,6 +1,12 @@
 import os
 
 class Config(object):
+    MAIL_SERVER = os.environ.get('MAILTRAP_SERVER')
+    MAIL_PORT = 2525
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = os.environ.get("MAILTRAP_USERNAM")
+    MAIL_PASSWORD = os.environ.get("MAILTRAP_PASSWORD")
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     # access to .env and get the value of SECRET_KEY, the variable name can be any but needs to match
     JWT_SECRET_KEY =  os.environ.get("SECRET_KEY")

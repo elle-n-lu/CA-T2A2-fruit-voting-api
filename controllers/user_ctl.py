@@ -1,11 +1,37 @@
 from datetime import timedelta
+import os
 from flask import Blueprint, request, abort, jsonify
 from sqlalchemy import exc
-from pkg_init import db, bcrypt
+from flask_mail import Message
+from itsdangerous import URLSafeTimedSerializer
+from pkg_init import db, bcrypt, mail
 from models.users import User, UserSchema
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 
 app_user=Blueprint("user",__name__)
+
+serializer = URLSafeTimedSerializer(os.environ.get("SECRET_KEY"))
+
+def generate_token(email):
+    token = serializer.dumps(email, salt='reset-password')
+    return token
+
+def verify_reset_token(token):
+    try:
+        email = serializer.loads(token, salt='reset-password', max_age=3600)  # Token expiration set to 1 hour
+    except:
+        return None
+    user=User.query.filter_by(email=email).first()
+    return user
+
+def send_reset_email(email):
+    token= generate_token(email)
+    msg = Message("reset password",
+                  sender="from@example.com",
+                  recipients=[email])
+    msg.body= f'''http://127.0.0.1:5000/reset_password/{token}'''
+    mail.send(msg)
+
 
 # login check funtion
 def login_required():
@@ -33,6 +59,31 @@ def get_user_details():
     user=User.query.filter_by(id=user_id).first()
     res=UserSchema(exclude=['password',]).dump(user)
     return jsonify(res)
+
+# '--------------------------'
+
+@app_user.route("/reset_password", methods=['GET','POST'])
+def send_email():
+    email=request.form['email']
+    user_check=User.query.filter_by(email=email).first()
+    if not user_check:
+        return 'invalid email'
+    # send reset email if user email exists in db
+    send_reset_email(email)
+    return 'please check your email inbox'
+
+# '--------------------------'
+@app_user.route("/reset_password/<token>", methods=['GET','POST'])
+def reset_password(token):
+    user= verify_reset_token(token)
+    if not user:
+        return {"error":"toekn expired"}
+    reset_data=request.form['password']
+    user.password=bcrypt.generate_password_hash(reset_data).decode('utf-8')
+    db.session.commit()
+    return {'msg':'password changed, login again !'}
+
+# '--------------------------'
 
 # update user info
 @app_user.route("/my/<int:user_id>",methods=['PUT'])

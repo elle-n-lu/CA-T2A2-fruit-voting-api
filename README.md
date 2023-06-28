@@ -40,7 +40,37 @@ Flask-SQLAlchemy simplifies the process of working with databases in Flask appli
 
 ## R5
 
-[Endpoints link](https://documenter.getpostman.com/view/19703585/2s93sjVpDe)
+[Endpoints link](https://documenter.getpostman.com/view/19703585/2s93z9bhp1)
+
+## R7
+
+### 3rd party service:
+
+> Flask-Mail:
+
+Mainly used for user reset password when they forgot password.
+
+init app with flask mail:
+
+```
+mail=Mail(app)
+```
+
+create three functions:
+
+* generate a token
+* send email with content having a reset link which invloves the token for verification
+in this step use flask-mail implementation,example:
+```
+mail.send(msg)
+```
+* user click the link, token verify if expire or not, if not then allowed to input new password.
+
+> mailtrap
+
+use to test mail receive;
+
+<img src='./docs/mailtrap_resetpassword_email_screenshot.png' />
 
 ## R6 & R9
 
@@ -170,14 +200,16 @@ Last step is to generate end points api by using postman.
 ## § Instructions
 
 1. git clone this repo
+
 2. install python venv
 
         python3 -m venv .venv && source .venv/bin/activate 
+
 3. install packages
 
         python3 -m pip install -r requirements.txt
 
-4. create .env file and set up DATABASE_URL and SECRET_KEY
+4. create .env file and set up DATABASE_URL and SECRET_KEY, MAILTRAP_SERVER, MAILTRAP_USERNAME, MAILTRAP_PASSWORD
 
 5. generate models and admin
 
