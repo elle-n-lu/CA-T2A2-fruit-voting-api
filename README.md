@@ -16,6 +16,10 @@ The reason to use PostgreSQL is because it's a powerful database management syst
 
 Drawbacks such as its complexity: PostgreSQL can be more complex to set up and administer compared to simpler database solutions. It may require more expertise and resources for maintenance and optimization, especially for larger deployments or complex configurations, and Resource Consumption: PostgreSQL's advanced features and capabilities may consume more system resources, such as memory and CPU, compared to lightweight databases. This can be a consideration if you have limited resources or are targeting a highly scalable environment.
 
+Reference:
+
+Peterson, R. (2019). What is PostgreSQL? Introduction, History, Features, Advantages. [online] Guru99.com. Available at: https://www.guru99.com/introduction-postgresql.html.
+
 ## R4
 
 An Object-Relational Mapping (ORM) library, like SQLAlchemy for Flask, provides a way to interact with a relational database using Python objects, thereby bridging the gap between the object-oriented programming paradigm and the relational data model. 
@@ -38,6 +42,14 @@ Here are the key functionalities and benefits of using an ORM like SQLAlchemy in
 
 Flask-SQLAlchemy simplifies the process of working with databases in Flask applications by providing a convenient and intuitive interface. It handles database configuration, ORM mapping, query generation, session management, and integration with Flask. With Flask-SQLAlchemy, you can focus on building your application's logic and rely on its powerful database functionalities to interact with the database efficiently.
 
+Reference:
+
+Abba, I.V. (2022). What is an ORM – The Meaning of Object Relational Mapping Database Tools. [online] freeCodeCamp.org. Available at: https://www.freecodecamp.org/news/what-is-an-orm-the-meaning-of-object-relational-mapping-database-tools/.
+
+Tran, B. (2020). ORM and SQLAlchemy — The ‘Magic Wand’ in Database Management. [online] Medium. Available at: https://trantriducs.medium.com/orm-and-sqlalchemy-the-magic-wand-in-database-management-a2d02877a57a [Accessed 30 Jun. 2023].
+
+Huls, M. (2022). No Need to Ever Write SQL Again: SQLAlchemy’s ORM for Absolute Beginners. [online] Medium. Available at: https://towardsdatascience.com/no-need-to-ever-write-sql-again-sqlalchemys-orm-for-absolute-beginners-107be0b3148f [Accessed 30 Jun. 2023].
+
 ## R5
 
 [Endpoints link](https://documenter.getpostman.com/view/19703585/2s93z9bhp1)
@@ -59,14 +71,25 @@ mail=Mail(app)
 create three functions:
 
 * generate a token
+
+use itsdangerous package to generate and verify token.
+
 * send email with content having a reset link which invloves the token for verification
 in this step use flask-mail implementation,example:
 ```
+from flask_mail import Mail
+mail=Mail(app)
+
+....
+
 mail.send(msg)
 ```
 * user click the link, token verify if expire or not, if not then allowed to input new password.
 
 > mailtrap
+
+add app configuration
+<img src='./docs/mailtrap_config.png' />
 
 use to test mail receive;
 
