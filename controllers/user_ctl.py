@@ -140,7 +140,9 @@ def login_users():
     # generate token
     expire=timedelta(days=1)
     access_token=create_access_token(identity=user.id,expires_delta=expire)
-    # return data for further using
+    # session['user_token'] = access_token
+    # resp = make_response(redirect(url_for('cinema.get_cinema')))
+    # resp.set_cookie('resp', access_token)
     return {"user":user.username,"id":user.id, "token":access_token}
     
 # delete user account

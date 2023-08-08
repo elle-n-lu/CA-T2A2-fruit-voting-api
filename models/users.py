@@ -13,14 +13,17 @@ class User(db.Model):
     votes=db.relationship("Vote", backref="users", cascade="all, delete")
     comments=db.relationship("Comment", backref="users", cascade="all, delete")
 
+    orders=db.relationship("Order", backref="users", cascade="all, delete")
+
 class UserSchema(ma.Schema):
     username=fields.String(validate=Length(min=3))
     password=fields.String( validate=Length(min=8))
     email=fields.String(validate=Regexp('^[a-zA-Z][a-zA-Z0-9-_.]*@[a-zA-Z]+.[a-zA-Z]{1,3}$'))
 
     class Meta:
-        fields=("id","username","email", "password", "votes","comments")
+        fields=("id","username","email", "password", "votes","comments","orders")
 
     votes= fields.List(fields.Nested("VoteSchema", exclude=['user_id',]))
     comments= fields.List(fields.Nested("CommentSchema", exclude=['user_id',]))
+    orders= fields.List(fields.Nested("OrderSchema", exclude=['user_id',]))
     

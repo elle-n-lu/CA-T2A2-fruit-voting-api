@@ -1,0 +1,124 @@
+{% extends 'cinema/index.html' %}
+
+{% block info %}
+
+<div class="py-2 mb-2" style="background-color: rgb(206, 208, 210);">
+    Sessions
+</div>
+<form method="post" class="h-25">
+    <div class="row">
+        <div class="col-sm">
+            <label for="session">Choose a time:</label>
+        
+            <select name="session_time" id="session_time">
+                {% for time in all_sessions %}
+                <option value="{{ time }}">{{ time }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        {% include 'cinema/cinema_movie-schedule-checl.html' %}
+        
+        <div class="col-sm">
+
+            <label for="movies">Choose a movie:</label>
+
+            <select name="movie_id" id="movie_name" onchange="change_schedules()">
+                {% for movie in movies %}
+                <option value="{{ movie['id'] }}">{{ movie['movie_name'] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-sm">
+
+            <label for="schedules">Choose a schedule:</label>
+
+            <select name="schedule_id" id="schedule_date">
+                {% for schedule in schedules %}
+                <option value="{{ schedule['id'] }}">{{ schedule['schedule_date'].split(' ')[0] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class=" mt-3">
+        <input type="submit" value="Add new session" class="btn btn-primary">
+    </div>
+
+</form>
+<form method="post" class="h-25" action="{{ url_for('sessions.delete_session') }}">
+    <div class="row">
+
+        {% include 'cinema/cinema_movies-chedule-delete.html' %}
+        <div class="col-sm">
+            <div >
+                <label for="schedule_date">select a date:</label>
+                <select name="schedule_id" id="delete_schedule_date" onchange="change_delete_sessions()">
+                    {% for schedule in schedules %}
+                    <option value="{{ schedule['id'] }}">{{ schedule['schedule_date'].split(' ')[0] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="col-sm">
+            <div >
+                <label for="session_time">select a session:</label>
+                <select name="session_id" id="delete_session_time">
+                   
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class=" mt-3">
+        <input type="submit" value="delete a session" class="btn btn-primary">
+    </div>
+
+</form>
+{% endblock %}
+
+{% block javascript %}
+<script>
+
+    function change_schedules() {
+        var cinema_target = document.getElementById('cinema_name')
+        var cinema_val = cinema_target.options[cinema_target.selectedIndex].value;
+        var movie_target = document.getElementById('movie_name')
+        var movie_val = movie_target.options[movie_target.selectedIndex].value;
+        var schedule_target = document.getElementById('schedule_date')
+        
+        while (schedule_target.options.length) {
+            schedule_target.remove(0)
+        }
+        $.ajax({
+            url: '/ajax_schedules/' + cinema_val+'/'+movie_val,
+            type: 'GET',
+        }).done(function (data) {
+            data.map(x => {
+                var item = new Option(x.schedule_date.split(' ')[0], x.id)
+                schedule_target.options.add(item)
+            })
+        })
+    }
+    function change_delete_sessions() {
+        var cinema_target = document.getElementById('delete_cinema_name')
+        var cinema_val = cinema_target.options[cinema_target.selectedIndex].value;
+        var movie_target = document.getElementById('delete_movie_name')
+        var movie_val = movie_target.options[movie_target.selectedIndex].value;
+        var schedule_target = document.getElementById('delete_schedule_date')
+        var schedule_val = schedule_target.options[schedule_target.selectedIndex].value;
+        var session_target = document.getElementById('delete_session_time')
+        
+        while (session_target.options.length) {
+            session_target.remove(0)
+        }
+        $.ajax({
+            url: '/ajax_sessions/' + cinema_val+'/'+movie_val+'/'+schedule_val,
+            type: 'GET',
+        }).done(function (data) {
+            data.map(x => {
+                var item = new Option(x.session_time.split(' ')[0], x.id)
+                session_target.options.add(item)
+            })
+        })
+    }
+</script>
+{% endblock %}

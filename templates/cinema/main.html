@@ -1,0 +1,89 @@
+{% extends 'cinema/index.html' %}
+
+{% block info %}
+<a href="{{ url_for('cinema.get_cinema') }}"><button>
+        < cinemas</button></a>
+<div class="d-flex justify-content-between p-2">
+
+    <h1>ALL MOVIES</h1>
+    <button class="rounded" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="bi bi-file-earmark-plus">Add
+            new movie</i></button>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">New Movie</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" class="w-50">
+                    <div class="form-group">
+                        <label for="movie_name">movie_name</label>
+                        <input type="movie_name" class="form-control my-3" name="movie_name" id="movie_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="introduction">introduction</label>
+                        <input type="introduction" class="form-control my-3" name="introduction" id="introduction"
+                            required>
+                    </div>
+
+                    <input type="submit" value="Add" class="btn btn-primary ">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% for movie in movies %}
+
+
+<div class="d-flex justify-content-between align-items-center bg-secondary my-1">
+    <label style="font-size: 20px; color: white;">{{ movie['movie_name'] }}</label>
+    <div class="d-flex align-items-center " style="font-size: 1rem;color: white;">
+
+        <button type="button" data-toggle="collapse" data-target={{"#collapseExample"+movie['id']|string}}
+            aria-expanded="false" aria-controls="collapseExample">
+            ^ schedule collapse
+        </button>
+
+        <a href="{{ url_for('movie.update_movie',movie_id=movie['id'], id=request.path.split('/')[2]) }}"><button
+                class="mx-2"><i class="bi bi-pencil-square">Update</i></button></a>
+        <!-- <button data-id={{movie['id']}} class="mx-2" id="deletemoview"><i class="bi bi-dash-circle ">Delete</i></button> -->
+    </div>
+</div>
+<div class="collapse" id={{"collapseExample"+movie['id']|string}}>
+
+    <div class="bg-light ">
+        <div style="background-color: rgb(206, 208, 210);">
+            Schedules
+        </div>
+        {% for schedule in movie['schedules'] %}
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th scope="row">{{ schedule['schedule_date'].split(' ')[0] }}</th>
+                    {% for session in schedule['sessions'] %}
+                    <td>{{session['session_time'] }}</td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+
+        {% endfor %}
+    </div>
+
+</div>
+{% endfor %}
+
+{% endblock %}
+
+{% block javascript %}
+<script type="text/javascript">
+
+</script>
+{% endblock %}

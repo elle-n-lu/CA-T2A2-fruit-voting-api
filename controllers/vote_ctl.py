@@ -5,7 +5,7 @@ from flask import Blueprint, request
 from pkg_init import db
 from controllers.user_ctl import login_required, owner_required
 from models.votes import Vote, VoteSchema
-from models.species import Specie
+from models.movies import Movie
 
 app_vote=Blueprint("vote",__name__,url_prefix='/species/<int:id>' )
 
@@ -18,7 +18,7 @@ def create_vote(id):
     # check user login
     user_id=login_required()
     # check if specie exist , error if not
-    specie=Specie.query.filter_by(id=id).first()
+    specie=Movie.query.filter_by(id=id).first()
     if not specie:
         return {'error':"specie not exist"}
     # avoid repetitive vote

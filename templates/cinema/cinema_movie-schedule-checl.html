@@ -1,0 +1,34 @@
+<div class="col-sm">
+
+    <label for="cinemas">Choose a cinema:</label>
+
+    <select name="cinema_id" id="cinema_name" onchange="change_movies()">
+        {% for cinema in cinemas %}
+        <option value="{{ cinema['id'] }}">{{ cinema['cinema_name'] }}</option>
+        {% endfor %}
+    </select>
+</div>
+<script>
+    function change_movies() {
+        var cinema_target = document.getElementById('cinema_name')
+        var movie_target = document.getElementById('movie_name')
+        var cinema_val = cinema_target.options[cinema_target.selectedIndex].value;
+
+        while (movie_target.options.length) {
+            movie_target.remove(0)
+        }
+        console.log('sadas', cinema_val)
+        $.ajax({
+            url: '/ajax_movies/' + cinema_val,
+            type: 'GET',
+        }).done(function (data) {
+            // console.log(data)
+            data.map(x => {
+                var item = new Option(x.movie_name, x.id)
+                movie_target.options.add(item)
+            })
+        })
+    }
+
+    
+</script>

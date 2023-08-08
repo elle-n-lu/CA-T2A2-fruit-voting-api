@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="row bg-light" style="height: 100vh">
+    <div class="col-2 bg-secondary ">
+        <div class="nav-l d-flex flex-column" style="font-size:25px;">
+            <a style="color: white;" href="{{ url_for('cinema.get_cinema') }}">
+                cinemas
+            </a>
+            <a style="color: white;" href="{{ url_for('orders.get_orders') }}">
+                orders
+            </a>
+            <a style="color: white;" href="{{ url_for('schedules.get_schedules') }}">Schedules</a>
+
+            <a style="color: white;" href="{{ url_for('sessions.get_sessions') }}">
+                Sessions</a>
+            <a style="color: white;" href="{{ url_for('admin.get_users') }}">Users</a>
+
+        </div>
+    </div>
+
+
+    <div class="col-10">
+        {% block info %}{% endblock %}
+    </div>
+
+
+</div>
+
+{% endblock %}
+{% block javascript %}
+<script>
+    $(document).ready(function () {
+        $('.nav-l a').hover(function () {
+            $('a').removeClass('active');
+            $(this).addClass('active');
+        })
+    });
+</script>
+{% endblock %}
