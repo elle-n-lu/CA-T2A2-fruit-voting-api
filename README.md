@@ -1,3 +1,7 @@
+![FLASK](https://img.shields.io/badge/flask-%2320232a.svg?style=for-the-badge&logo=flask&logoColor=%2361DAFB)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-%2320232a.svg?style=for-the-badge&logo=PostgreSQL&logoColor=green)
+![Jinja](https://img.shields.io/badge/Jinja-%2320232a.svg?style=for-the-badge&logo=Jinja&logoColor=green)
+
 ## R1
 
 This fruit voting api can help improve product. By allowing users to provide comments and feedback on fruit flavors, the API enables fruit companies to understand the strengths and weaknesses of their offerings. This feedback can be used to improve existing flavors, create new ones, or identify trends in consumer preferences.
