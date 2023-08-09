@@ -13,16 +13,18 @@ from flask_login import login_required,current_user
 
 app_cinema=Blueprint("cinema",__name__)
 
-'''
-in-use
-'''
 # retrieve all cinema data
+
+@app_cinema.route("/cinemas",methods=('GET',))
 def get_cinemas():
     stmt=db.select(Cinema)
     cinema=db.session.scalars(stmt)
     posts =  CinemaSchema(many=True,exclude=['admin_id',]).dump(cinema)
     return posts
-
+'''
+in-use
+views
+'''
 @app_cinema.route("/all_cinemas",methods=('GET', 'POST'))
 @login_required
 def get_cinema():
@@ -40,6 +42,10 @@ def get_cinema():
     posts = get_cinemas()
     return render_template('cinema/all_cinames.html', posts=posts,user=current_user.username)
 
+
+'''
+waiting for adding ????????-------???????
+'''
 # update single specie
 @app_cinema.route("/cinema/<int:cinema_id>",methods=['PUT'])
 @jwt_required()
