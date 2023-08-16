@@ -1,4 +1,5 @@
 
+from controllers.seat_ctl import get_all_seats_by_cinema
 from flask_jwt_extended import  jwt_required
 from controllers.order_ctl import get_order_ss
 from controllers.cinema_ctl import get_cinemas
@@ -43,9 +44,16 @@ def create_movie(id):
 '''
 in-use
 '''
-@app_movie.route("/ajax_movies/<int:a>", methods=['GET'])
-def get_all_movies(a):
+@app_movie.route("/ajax_movies_cinema/<int:a>", methods=['GET'])
+def get_all_movies_fromcinam(a):
     stmt=db.select(Movie).filter_by(cinema_id=a)
+    movie=db.session.scalars(stmt)
+    posts =  MovieSchema(many=True).dump(movie)
+    return posts
+
+@app_movie.route("/ajax_movies/<int:a>/<int:b>", methods=['GET'])
+def get_all_movies(a,b):
+    stmt=db.select(Movie).filter_by(seat_id=a, cinema_id=b)
     movie=db.session.scalars(stmt)
     posts =  MovieSchema(many=True).dump(movie)
     return posts
@@ -54,13 +62,16 @@ def get_all_movies(a):
 @app_movie.route("/cinema/<int:id>/movies", methods=('GET', 'POST'))
 @login_required
 def get_movies(id):
+    seats = get_all_seats_by_cinema(id)
     if request.method == 'POST':
         movie_name = request.form['movie_name']
         introduction = request.form['introduction']
+        seat_id = request.form['seat_id']
         new_movie = Movie(
             movie_name=movie_name,
             introduction = introduction,
-            cinema_id=id
+            cinema_id=id,
+            seat_id=seat_id
         )
         db.session.add(new_movie)
         db.session.commit()
@@ -69,7 +80,7 @@ def get_movies(id):
     stmt = db.select(Movie).filter_by(cinema_id=id)
     movies = db.session.scalars(stmt)
     movie =  MovieSchema(many=True, exclude=['votes','comments']).dump(movies)
-    return render_template('cinema/main.html', movies=movie,posts=posts,user=current_user.username)
+    return render_template('cinema/main.html',seats=seats, movies=movie,posts=posts,user=current_user.username)
 
 '''
 
@@ -111,9 +122,9 @@ def update_movie(id,movie_id):
     # check admin authorization
     # admin_required()
     posts = get_cinemas()
-    
+    seats = get_all_seats_by_cinema(id)
     # check if movie exist , error if not
-    movie_check=Movie.query.filter_by(id=movie_id).first()
+    movie_check=Movie.query.filter_by(id=movie_id,cinema_id=id).first()
     # get use input
     # movie= MovieSchema().load(request.form)
     if not movie_check:
@@ -122,12 +133,14 @@ def update_movie(id,movie_id):
     if request.method == 'POST':
         movie_name = request.form['movie_name']
         introduction = request.form['introduction']
+        seat_id = request.form['seat_id']
         movie_check.movie_name=movie_name
         movie_check.introduction=introduction
+        movie_check.seat_id = seat_id
         db.session.commit()
         return redirect(url_for('movie.get_movies',id=id))
     movie_e= MovieSchema().dump(movie_check)
-    return render_template('cinema/update.html', post=movie_e,posts=posts,user=current_user.username)
+    return render_template('cinema/update.html',seats=seats, post=movie_e,posts=posts,user=current_user.username)
 
 
 

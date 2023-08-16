@@ -3,7 +3,7 @@ import re
 from flask_jwt_extended import jwt_required
 from flask import Blueprint, request
 from pkg_init import db
-from controllers.user_ctl import login_required, owner_required
+from controllers.user_ctl import user_login_required, owner_required
 from models.votes import Vote, VoteSchema
 from models.movies import Movie
 
@@ -16,7 +16,7 @@ def create_vote(id):
     # convert input string to boolean
     z = lambda x: True if x.lower() =='true' else False
     # check user login
-    user_id=login_required()
+    user_id=user_login_required()
     # check if specie exist , error if not
     specie=Movie.query.filter_by(id=id).first()
     if not specie:

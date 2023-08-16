@@ -2,7 +2,7 @@
 from flask_jwt_extended import  jwt_required
 from flask import Blueprint, request
 from pkg_init import db
-from controllers.user_ctl import login_required, owner_required
+from controllers.user_ctl import user_login_required, owner_required
 from models.comments import Comment, CommentSchema
 
 app_comment=Blueprint("comment",__name__,url_prefix='/species/<int:id>' )
@@ -12,7 +12,7 @@ app_comment=Blueprint("comment",__name__,url_prefix='/species/<int:id>' )
 @jwt_required()
 def create_comment(id):
     # login check
-    user_id=login_required()
+    user_id=user_login_required()
     # retrieve requested formdata
     comment= CommentSchema().load(request.form)
     new_message= Comment(
@@ -31,7 +31,7 @@ def create_comment(id):
 @jwt_required()
 def reply_comment(id,parent_comment_id):
     # login check
-    user_id=login_required()
+    user_id=user_login_required()
     # retrieve requested formdata
     comment= CommentSchema().load(request.form)
     # check if the parent comment exist, error if not

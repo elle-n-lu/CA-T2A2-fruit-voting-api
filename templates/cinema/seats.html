@@ -1,0 +1,45 @@
+{% extends 'cinema/index.html' %}
+
+{% block info %}
+
+<form method="post" class=" w-75">
+    <div class="form-group">
+        <div class="form-group">
+            <label for="seat_number">seat_number</label>
+            <input type="number" class="form-control my-3" name="seat_number" id="seat_number" required>
+        </div>
+        <div class="form-group">
+            <label for="cinemas">Choose a cinema:</label>
+            <select name="cinema_id" id="cinema_name" >
+                {% for cinema in cinemas %}
+                <option value="{{ cinema['id'] }}">{{ cinema['cinema_name'] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <input type="submit" value="Add room seats capacity" class="btn btn-primary ">
+        <input class="btn btn-secondary" type="submit" value="Save">
+    </div>
+</form>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">id</th>
+            <th scope="col">seat_number</th>
+            <th scope="col">cinema_id</th>
+            <th scope="col">operation</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for seat in seats %}
+        <tr>
+            <th scope="row">{{ seat['id'] }}</th>
+            <td>{{ seat['seat_number'] }}</td>
+            <td>{{ seat['cinema_id'] }}</td>
+            <td><a href="{{ url_for('seats.delete_a_seat',id=seat['id'],cinema_id=seat['cinema_id'] ) }}">delete</button></td>
+          </tr>
+          {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

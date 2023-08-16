@@ -7,6 +7,8 @@
 This is a movie booking management application allowing admin to login and update cinemas, movies, schedules and sessions in webpage supported by Jinja.
 This app uses Flask-login to do admin login and logout session management.
 
+The project is based on the Code Academy's flask api assignment. 
+
 ## § Instructions
 
 1. git clone this repo

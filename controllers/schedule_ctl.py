@@ -1,4 +1,6 @@
+from datetime import date
 from flask_jwt_extended import  jwt_required
+from controllers.seat_ctl import get_seats
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from controllers.movie_ctl import get_all_movies
 from controllers.cinema_ctl import get_cinemas
@@ -35,9 +37,9 @@ def create_schedule(cinema_id, movie_id):
 '''
 in-use
 '''
-@app_schedule.route("/ajax_schedules/<int:a>/<int:b>", methods=['GET'])
-def get_all_schedules(a,b):
-    stmt=db.select(Schedule).filter_by(cinema_id=a, movie_id=b)
+@app_schedule.route("/ajax_schedules/<int:a>/<int:b>/<int:c>", methods=['GET'])
+def get_all_schedules(a,b,c):
+    stmt=db.select(Schedule).filter_by(cinema_id=a, seat_id=b, movie_id=c)
     print('stm',stmt)
     schedule=db.session.scalars(stmt)
     posts =  ScheduleSchema(many=True).dump(schedule)
@@ -51,28 +53,31 @@ def get_schedules():
         cinema_id = request.form['cinema_id']
         schedule_date = request.form['schedule_date']
         movie_id = request.form['movie_id']
+        seat_id = request.form['seat_id']
         new_schedule= Schedule(
             schedule_date=schedule_date,
             cinema_id=cinema_id,
-            movie_id=movie_id
+            movie_id=movie_id,
+            seat_id = seat_id
         )
         # toast='schedule added !'    
         db.session.add(new_schedule)
         db.session.commit()
         return redirect(url_for('schedules.get_schedules'))
+    today_date = date.today()
     cinemas=get_cinemas()
-    movies=get_all_movies(cinemas[0]['id'])
-    # stmt=db.select(Schedule)
-    # schedules=db.session.scalars(stmt)
-    # schedules_r =  ScheduleSchema(many=True,).dump(schedules)
-    return render_template('cinema/all_schedules.html',  cinemas=cinemas,movies=movies,user=current_user.username)
+    seats=get_seats()
+    if not cinemas or not seats:
+        return render_template('cinema/all_schedules.html',)
+    movies=get_all_movies(cinemas[0]['id'],seats[0]['id'])
+    return render_template('cinema/all_schedules.html', today_date=today_date, cinemas=cinemas,movies=movies,user=current_user.username)
 
 '''
 
 '''
 
-def schedule_check(schedule_id,cinema_id, movie_id):
-    schedule_check=Schedule.query.filter_by(id=schedule_id,cinema_id=cinema_id,movie_id=movie_id).first()
+def schedule_check(schedule_id,cinema_id, movie_id,seat_id):
+    schedule_check=Schedule.query.filter_by(seat_id=seat_id,id=schedule_id,cinema_id=cinema_id,movie_id=movie_id).first()
     if not schedule_check:
         return {"error":"schdule for this movie not exist"}
     return schedule_check
@@ -111,8 +116,9 @@ def delete_schedule():
     schedule_id = request.form['schedule_id']
     cinema_id = request.form['cinema_id']
     movie_id = request.form['movie_id']
+    seat_id = request.form['seat_id']
     # check if schedule exist
-    schedule_c = schedule_check(schedule_id,cinema_id, movie_id)
+    schedule_c = schedule_check(schedule_id,cinema_id, movie_id, seat_id)
     # delete movie
     db.session.delete(schedule_c)
     db.session.commit()

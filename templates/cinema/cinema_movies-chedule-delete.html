@@ -4,9 +4,19 @@
 
         <label for="cinemas">Choose a cinema:</label>
 
-        <select name="cinema_id" id="delete_cinema_name" onchange="change_delete_movies()">
+        <select name="cinema_id" id="delete_cinema_name" onchange="change_delete_seats()">
             {% for cinema in cinemas %}
             <option value="{{ cinema['id'] }}">{{ cinema['cinema_name'] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-sm">
+
+        <label for="seats">Choose a seats room:</label>
+
+        <select name="seat_id" id="delete_seat_number" onchange="change_delete_movies()">
+            {% for seat in seats %}
+            <option value="{{ seat['id'] }}">{{ seat['seat_number'] }}</option>
             {% endfor %}
         </select>
     </div>
@@ -22,20 +32,39 @@
     </div>
     
 <script>
+    function change_delete_seats(){
+        var cinema_target = document.getElementById('delete_cinema_name')
+        var cinema_val = cinema_target.options[cinema_target.selectedIndex].value;
+        var seat_target = document.getElementById('delete_seat_number')
+
+        while (seat_target.options.length) {
+            seat_target.remove(0)
+        }
+        $.ajax({
+            url: '/ajax_seats/' + cinema_val,
+            type: 'GET',
+        }).done(function (data) {
+            data.map(x => {
+                var item = new Option(x.seat_number, x.id)
+                seat_target.options.add(item)
+            })
+        })
+    }
     function change_delete_movies(){
         var cinema_target = document.getElementById('delete_cinema_name')
-        var movie_target = document.getElementById('delete_movie_name')
         var cinema_val = cinema_target.options[cinema_target.selectedIndex].value;
+        var seat_target = document.getElementById('delete_seat_number')
+        var seat_val = seat_target.options[seat_target.selectedIndex].value;
+        var movie_target = document.getElementById('delete_movie_name')
+
 
         while (movie_target.options.length) {
             movie_target.remove(0)
         }
-        console.log('sadas', cinema_val)
         $.ajax({
-            url: '/ajax_movies/' + cinema_val,
+            url: '/ajax_movies/' + seat_val+'/'+cinema_val,
             type: 'GET',
         }).done(function (data) {
-            // console.log(data)
             data.map(x => {
                 var item = new Option(x.movie_name, x.id)
                 movie_target.options.add(item)
@@ -46,6 +75,8 @@
     function change_delete_schedules(){
         var cinema_target = document.getElementById('delete_cinema_name')
         var cinema_val = cinema_target.options[cinema_target.selectedIndex].value;
+        var seat_target = document.getElementById('delete_seat_number')
+        var seat_val = seat_target.options[seat_target.selectedIndex].value;
         var movie_target = document.getElementById('delete_movie_name')
         var movie_val = movie_target.options[movie_target.selectedIndex].value;
         var schedule_target = document.getElementById('delete_schedule_date')
@@ -54,10 +85,10 @@
             schedule_target.remove(0)
         }
         $.ajax({
-            url: '/ajax_schedules/' + cinema_val+'/'+movie_val,
+            url: '/ajax_schedules/' + cinema_val+'/'+seat_val+'/'+movie_val,
             type: 'GET',
         }).done(function (data) {
-            // console.log(data)
+            console.log('dara',data)
             data.map(x => {
                 var item = new Option(x.schedule_date.split(' ')[0], x.id)
                 schedule_target.options.add(item)

@@ -1,24 +1,33 @@
 {% extends 'cinema/index.html' %}
 
 {% block info %}
-<a href="{{ url_for('movie.get_movies', id=request.path.split('/')[2])  }}"><button>< movies</button></a>
+<a href="{{ url_for('movie.get_movies', id=request.path.split('/')[2])  }}"><button>
+    < movies</button></a>
 
-  <form method="post" class=" w-75">
-    <div  class="form-group">
+<form method="post" class=" w-75">
+  <div class="form-group">
 
-        <label for="movie_name">movie name</label>
-        <input name="movie_name" id="movie_name"  class="form-control my-3"
-          value="{{ request.form['movie_name'] or post['movie_name'] }}" required>
-    </div>
-    <div  class="form-group">
-        <label for="introduction">introduction</label>
-        <textarea name="introduction"  class="form-control my-3"
-         id="introduction">{{ request.form['introduction'] or post['introduction'] }}</textarea>
-    </div>
-    <input class="btn btn-secondary" type="submit" value="Save">
-  </form>
-  <hr>
-  <form action="{{ url_for('movie.delete_movie', movie_id=post['id'], id=request.path.split('/')[2]) }}" method="post">
-    <input class="btn btn-danger" type="submit" value="Delete Movie" onclick="return confirm('Are you sure?');">
-  </form>
+    <label for="movie_name">movie name</label>
+    <input name="movie_name" id="movie_name" class="form-control my-3"
+      value="{{ request.form['movie_name'] or post['movie_name'] }}" required>
+  </div>
+  <div class="form-group">
+    <label for="introduction">introduction</label>
+    <textarea name="introduction" class="form-control my-3"
+      id="introduction">{{ request.form['introduction'] or post['introduction'] }}</textarea>
+  </div>
+  <div class="form-group">
+    <label for="seats">Choose a seat:</label>
+    <select name="seat_id" id="seat_number">
+      {% for seat in seats %}
+      <option value="{{ seat['id'] }}">{{ seat['seat_number'] }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <input class="btn btn-secondary" type="submit" value="Save">
+</form>
+<hr>
+<form action="{{ url_for('movie.delete_movie', movie_id=post['id'], id=request.path.split('/')[2]) }}" method="post">
+  <input class="btn btn-danger" type="submit" value="Delete Movie" onclick="return confirm('Are you sure?');">
+</form>
 {% endblock %}

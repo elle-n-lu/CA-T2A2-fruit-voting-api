@@ -10,11 +10,14 @@ class Movie(db.Model):
     registed_date = db.Column(db.DateTime(timezone=True), server_default=db.sql.func.now())
 
     cinema_id=db.Column(db.Integer, db.ForeignKey("cinemas.id"), nullable=False)
+    #add
+    seat_id=db.Column(db.Integer, db.ForeignKey("seats.id"), nullable=False)
 
     votes=db.relationship("Vote", backref="movies", cascade="all, delete")
     comments=db.relationship("Comment", backref="movies", cascade="all, delete")
 
     schedules=db.relationship("Schedule", backref="movies", cascade="all, delete")
+
 
 
 class MovieSchema(ma.Schema):

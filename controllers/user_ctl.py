@@ -1,12 +1,12 @@
 from datetime import timedelta
 import os
-from flask import Blueprint, request, abort, jsonify
+from flask import Blueprint, request, abort, jsonify, session
 from sqlalchemy import exc
 from flask_mail import Message
 from itsdangerous import URLSafeTimedSerializer
 from pkg_init import db, bcrypt, mail
 from models.users import User, UserSchema
-from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
+from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, set_access_cookies
 
 app_user=Blueprint("user",__name__)
 
@@ -34,7 +34,7 @@ def send_reset_email(email):
 
 
 # login check funtion
-def login_required():
+def user_login_required():
     user_id = get_jwt_identity()
     stmt = db.select(User).filter_by(id=user_id)
     user=db.session.scalar(stmt)
@@ -140,9 +140,7 @@ def login_users():
     # generate token
     expire=timedelta(days=1)
     access_token=create_access_token(identity=user.id,expires_delta=expire)
-    # session['user_token'] = access_token
-    # resp = make_response(redirect(url_for('cinema.get_cinema')))
-    # resp.set_cookie('resp', access_token)
+    session['user_token'] = access_token
     return {"user":user.username,"id":user.id, "token":access_token}
     
 # delete user account

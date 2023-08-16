@@ -1,0 +1,9 @@
+{% extends 'cinema/index.html' %}
+
+{% block info %}
+<form action="{{ url_for('seats.delete_a_seat', cinema_id=request.path.split('/')[2], id=request.path.split('/')[4]) }}"
+    method="post">
+    <input class="btn btn-danger" type="submit" value="Delete Seat" onclick="return confirm('Are you sure?');">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+</form>
+{% endblock %}
