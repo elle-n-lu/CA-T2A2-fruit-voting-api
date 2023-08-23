@@ -2,7 +2,7 @@
 import os
 from app import setup
 from pkg_init import db, bcrypt
-from models.users import User
+from models.admin import Admin
 import sqlalchemy as sa
 
 
@@ -20,11 +20,11 @@ if __name__ == "__main__":
                 with engine.begin() as conn:
                     conn.execute(sa.text(f'DROP TABLE IF EXISTS "{table_name}" CASCADE'))
         db.create_all()
-        admin = User(
-            username="admin",
-            email="admin@email.com",
-            password=bcrypt.generate_password_hash("admin").decode("utf-8"),
-            admin=True,
+        admin=Admin(
+            username = "admin",
+            email ="admin@email.com",
+            password = bcrypt.generate_password_hash("admin").decode("utf-8"),
+            admin=True
         )
         db.session.add(admin)
         db.session.commit()
