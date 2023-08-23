@@ -1,7 +1,5 @@
 
 import os
-from app import setup
-from pkg_init import db, bcrypt
 from models.admin import Admin
 from models.users import User
 from models.cinema import Cinema
@@ -14,6 +12,8 @@ from models.sessions import Session
 from models.seats import Seat
 from models.movie_seat import Movie_Seat
 import sqlalchemy as sa
+from app import setup
+from pkg_init import db, bcrypt
 
 
 app = setup()
