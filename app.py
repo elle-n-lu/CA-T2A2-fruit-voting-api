@@ -1,5 +1,5 @@
 import os
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, session
 from flask_cors import CORS
 from flask_login import current_user,login_required
 from marshmallow.exceptions import ValidationError
@@ -62,6 +62,7 @@ def setup():
 
     @app.errorhandler(401)
     def unauthorised(err):
+        session.clear()
         return {"error":"You are not authorised"}, 401
     
     @app.errorhandler(BadRequest)

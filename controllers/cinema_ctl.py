@@ -21,6 +21,8 @@ def get_cinemas():
     cinema=db.session.scalars(stmt)
     posts =  CinemaSchema(many=True,exclude=['admin_id',]).dump(cinema)
     return posts
+
+
 '''
 in-use
 views

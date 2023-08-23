@@ -17,8 +17,8 @@
         {% for post in posts %}
         <div class="col-3">
 
-            <a href="{{ url_for('movie.get_movies',id=post['id'] ) }}"><button class="btn btn-outline-secondary my-2"
-                    id="cinema_name">{{ post['cinema_name'] }}</button></a>
+            <button class="btn btn-outline-secondary my-2"
+                    id="cinema_name">{{ post['cinema_name'] }}</button>
         </div>
         {% endfor %}
     </div>

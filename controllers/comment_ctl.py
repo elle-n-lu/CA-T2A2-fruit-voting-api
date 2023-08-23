@@ -5,7 +5,7 @@ from pkg_init import db
 from controllers.user_ctl import user_login_required, owner_required
 from models.comments import Comment, CommentSchema
 
-app_comment=Blueprint("comment",__name__,url_prefix='/species/<int:id>' )
+app_comment=Blueprint("comment",__name__,url_prefix='/movies/<int:id>' )
 
 # create comment authentication required
 @app_comment.route("/comments",methods=['POST'])
@@ -17,8 +17,7 @@ def create_comment(id):
     comment= CommentSchema().load(request.form)
     new_message= Comment(
         message=comment['message'],
-        # parent_comment_id=parent_comment_id,
-        specie_id=id, 
+        movie_id=id, 
         user_id=user_id
     )
     db.session.add(new_message)
@@ -42,7 +41,7 @@ def reply_comment(id,parent_comment_id):
     new_message= Comment(
         message=comment['message'],
         parent_comment_id=parent_comment_id,
-        specie_id=id, 
+        movie_id=id, 
         user_id=user_id
     )
     db.session.add(new_message)

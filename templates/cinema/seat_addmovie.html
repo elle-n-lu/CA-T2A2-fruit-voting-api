@@ -1,0 +1,84 @@
+{% extends 'cinema/index.html' %}
+{% block info %}
+<div class="py-2 mb-2" style="background-color: rgb(206, 208, 210);">
+    Add movies to rooms in different cinemas
+</div>
+<form method="post" >
+    <div class="row">
+        <div class="col-sm">
+        <label for="cinema_id">choose a cinema</label>
+
+        <select name="cinema_id" id="cinema_name" onchange="change_seats()">
+            {% for cinema in cinemas %}
+            <option value="{{ cinema['id'] }}">{{ cinema['cinema_name'] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-sm">
+        <label for="seat_id">choose a seatroom</label>
+
+        <select name="seat_id" id="seat_number" onchange="add_movie()">
+            {% for seat in seats %}
+            <option value="{{ seat['id'] }}">{{ seat['seat_number'] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-sm">
+        <label for="movie_id">choose a movie</label>
+
+        <select name="movie_id" id="choose_movie" >
+            
+        </select>
+    </div>
+    </div>
+    <div class=" mt-3">
+        <input type="submit" value="destribute movie" class="btn btn-primary">
+    </div>
+</form>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    function change_seats() {
+        var cinema_target = document.getElementById('cinema_name')
+        var cinema_val = cinema_target.options[cinema_target.selectedIndex].value;
+        var seat_target = document.getElementById('seat_number')
+        
+        while (seat_target.options.length) {
+            seat_target.remove(0)
+        }
+        $.ajax({
+            url: '/ajax_seats/' + cinema_val,
+            type: 'GET',
+        }).done(function (data) {
+            data.map(x => {
+                var item = new Option(x.seat_number, x.id)
+                seat_target.options.add(item)
+            })
+        })
+    }
+    
+    function add_movie() {
+        var cinema_target = document.getElementById('cinema_name')
+        var cinema_val = cinema_target.options[cinema_target.selectedIndex].value;
+        var seat_target = document.getElementById('seat_number')
+        var seat_val = seat_target.options[seat_target.selectedIndex].value;
+        var movie_target = document.getElementById('choose_movie')
+        
+        while (movie_target.options.length) {
+            movie_target.remove(0)
+        }
+        $.ajax({
+            url: '/ajax_movies_bind_seat',
+            type: 'GET',
+        }).done(function (data) {
+            data.map(x => {
+                console.log('x',x)
+
+                var item = new Option(x.movie_name, x.id)
+                movie_target.options.add(item)
+            })
+        })
+    }
+</script>
+{% endblock %}

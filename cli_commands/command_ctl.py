@@ -13,6 +13,8 @@ from models.orders import Order
 from models.schedules import Schedule
 from models.sessions import Session
 from models.seats import Seat
+from models.movie_seat import Movie_Seat
+from sqlalchemy import inspect, text
 import sqlalchemy as sa
 
 db_commands=Blueprint("db",__name__)
@@ -26,8 +28,8 @@ def drop_db():
         table_name = table_entry[0]
         if table_name:
             with engine.begin() as conn:
-                conn.execute(sa.text(f'DROP TABLE "{table_name}"'))
-#     db.metadata.drop_all(bind=Engine)
+                conn.execute(sa.text(f'DROP TABLE IF EXISTS "{table_name}" CASCADE'))
+    # db.metadata.drop_all(bind=Engine)
     print("tables dropped")
 
 @db_commands.cli.command("create")

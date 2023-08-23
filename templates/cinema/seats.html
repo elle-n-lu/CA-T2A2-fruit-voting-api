@@ -2,7 +2,7 @@
 
 {% block info %}
 
-<form method="post" class=" w-75">
+<form method="post" class=" w-75" action="{{url_for('seats.add_seat')}}">
     <div class="form-group">
         <div class="form-group">
             <label for="seat_number">seat_number</label>
@@ -10,18 +10,36 @@
         </div>
         <div class="form-group">
             <label for="cinemas">Choose a cinema:</label>
-            <select name="cinema_id" id="cinema_name" >
+            <select name="cinema_id" id="cinema_name">
                 {% for cinema in cinemas %}
                 <option value="{{ cinema['id'] }}">{{ cinema['cinema_name'] }}</option>
                 {% endfor %}
             </select>
         </div>
         <input type="submit" value="Add room seats capacity" class="btn btn-primary ">
-        <input class="btn btn-secondary" type="submit" value="Save">
+        <input class="btn btn-secondary" type="submit" name="add_new_room" value="Save">
     </div>
 </form>
+<div class="d-flex">
+    <button><a href="{{ url_for('seats.create_total_seat')}}">All</a></button>
+    <form method="post" class="text-end me-4 w-75" action="{{url_for('seats.filter_seat')}}">
+        <label for="seats">seat capacity</label>
+        <select name="seat_number" id="seat_number">
+            {% for seat in seatnumbers %}
+                    <option value="{{ seat }}">{{ seat }}</option>
+                    {% endfor %}
+        </select>
+        <label for="cinemas">cinema name</label>
+        <select name="cinema_id" id="cinema_name">
+            {% for cinema in cinemas %}
+                    <option value="{{ cinema['id'] }}">{{ cinema['cinema_name'] }}</option>
+                    {% endfor %}
+        </select>
+        <input class="btn btn-secondary" type="submit" name="filter" value="Filte">
+    </form>
+    <button><a href="{{ url_for('seats.add_playing_movie')}}"> Distribute movies</a></button>
 
-
+</div>
 <table class="table">
     <thead>
         <tr>
@@ -37,9 +55,11 @@
             <th scope="row">{{ seat['id'] }}</th>
             <td>{{ seat['seat_number'] }}</td>
             <td>{{ seat['cinema_id'] }}</td>
-            <td><a href="{{ url_for('seats.delete_a_seat',id=seat['id'],cinema_id=seat['cinema_id'] ) }}">delete</button></td>
-          </tr>
-          {% endfor %}
+            <td><a href="{{ url_for('seats.delete_a_seat',id=seat['id'],cinema_id=seat['cinema_id'] ) }}">delete</button>
+            </td>
+        </tr>
+        {% endfor %}
     </tbody>
 </table>
 {% endblock %}
+

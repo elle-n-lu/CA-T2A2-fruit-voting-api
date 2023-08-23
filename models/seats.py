@@ -12,12 +12,17 @@ class Seat(db.Model):
     
     # add
     cinema_id = db.Column(db.Integer, db.ForeignKey("cinemas.id"), nullable=False)
-    
 
+    movies=db.relationship("Movie", secondary="movie_seat",back_populates="seats", cascade="all, delete")
+    cinemas=db.relationship("Cinema", secondary="movie_seat",back_populates="seats", cascade="all, delete")
+    
 class SeatSchema(ma.Schema):
     
     class Meta:
         fields=("id","seat_number","cinema_id")
+    
+    # movies= fields.List(fields.Nested("MovieSchema",exclude=('votes',"comments","schedules")))
+
     
     
     

@@ -7,9 +7,10 @@ from controllers.user_ctl import user_login_required, owner_required
 from models.votes import Vote, VoteSchema
 from models.movies import Movie
 
-app_vote=Blueprint("vote",__name__,url_prefix='/species/<int:id>' )
+app_vote=Blueprint("vote",__name__,url_prefix='/movies/<int:id>' )
 
-# vote for one specie
+
+# vote for one movie
 @app_vote.route("/votes",methods=['POST'])
 @jwt_required()
 def create_vote(id):
@@ -17,19 +18,19 @@ def create_vote(id):
     z = lambda x: True if x.lower() =='true' else False
     # check user login
     user_id=user_login_required()
-    # check if specie exist , error if not
-    specie=Movie.query.filter_by(id=id).first()
-    if not specie:
-        return {'error':"specie not exist"}
+    # check if movie exist , error if not
+    movie=Movie.query.filter_by(id=id).first()
+    if not movie:
+        return {'error':"movie not exist"}
     # avoid repetitive vote
-    vote_check=Vote.query.filter_by(user_id=user_id, specie_id=id).first()
+    vote_check=Vote.query.filter_by(user_id=user_id, movie_id=id).first()
     if vote_check:
         return "already voted, you can only update it"
     # add use input in db
     vote= VoteSchema().load(request.form)
     new_vote= Vote(
         vote_status=z(vote['vote_status']),
-        specie_id=id, 
+        movie_id=id, 
         user_id=user_id
     )
     db.session.add(new_vote)
@@ -43,12 +44,13 @@ def get_vote(id):
     vote_check=Vote.query.all()
     return VoteSchema(many=True).dump(vote_check), 201
 
+
 # update vote status to different or delete it
 @app_vote.route("/votes/<int:vote_id>",methods=['PUT'])
 @jwt_required()   
 def update_vote(id,vote_id):
-    # check if user already vote this specie
-    vote_check=Vote.query.filter_by(id=vote_id).first()
+    # check if user already vote this movie
+    vote_check=Vote.query.filter_by(movie_id=id, id=vote_id).first()
     # get use input
     vote= VoteSchema().load(request.form)
     # if voted but user try to vote again,check vote status if not same then update

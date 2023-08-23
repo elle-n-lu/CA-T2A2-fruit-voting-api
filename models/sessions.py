@@ -13,7 +13,7 @@ class Session(db.Model):
     # add later
     seat_id = db.Column(db.Integer, db.ForeignKey("seats.id"), nullable=False)
 
-    movies=db.relationship("Movie", backref="seats", cascade="all, delete")
+    # movies=db.relationship("Movie", backref="sessions", cascade="all, delete")
 
 
 class SessionSchema(ma.Schema):

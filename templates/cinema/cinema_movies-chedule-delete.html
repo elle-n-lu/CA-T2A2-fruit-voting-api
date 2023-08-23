@@ -65,6 +65,8 @@
             url: '/ajax_movies/' + seat_val+'/'+cinema_val,
             type: 'GET',
         }).done(function (data) {
+            console.log('sadadsadas', data,seat_val )
+
             data.map(x => {
                 var item = new Option(x.movie_name, x.id)
                 movie_target.options.add(item)

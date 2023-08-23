@@ -7,11 +7,14 @@ class Cinema(db.Model):
     cinema_name= db.Column(db.String)
     registed_date = db.Column(db.DateTime(timezone=True), server_default=db.sql.func.now())
     
+    movies=db.relationship("Movie", secondary="movie_seat", back_populates="cinemas",cascade="all, delete")
+    seats=db.relationship("Seat", secondary="movie_seat",back_populates="cinemas", cascade="all, delete")
+    
     admin_id = db.Column(db.Integer, db.ForeignKey("admin.id"), nullable=False)
     
-    movies=db.relationship("Movie", backref="cinemas", cascade="all, delete")
-    orders=db.relationship("Order", backref="cinemas", cascade="all, delete")
 
+    orders=db.relationship("Order", backref="cinemas", cascade="all, delete")
+    
 class CinemaSchema(ma.Schema):
     cinema_name=fields.String(validate=Length(min=3))
     

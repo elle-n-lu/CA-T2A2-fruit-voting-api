@@ -45,7 +45,7 @@ in-use
 '''
 @app_session.route("/ajax_sessions/<int:a>/<int:b>/<int:c>/<int:d>", methods=['GET'])
 def get_all_sessions(a,b,c,d):
-    stmt=db.select(Session).filter_by(cinema_id=a,seat_id=d,movie_id=b,schedule_id=c)
+    stmt=db.select(Session).filter_by(cinema_id=a,seat_id=b,movie_id=c,schedule_id=d)
     session=db.session.scalars(stmt)
     posts =  SessionSchema(many=True).dump(session)
     return posts
