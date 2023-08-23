@@ -15,7 +15,7 @@ class Config(object):
     @property
     def SQLALCHEMY_DATABASE_URI(self):
         # access to .env and get the value of DATABASE_URL, the variable name can be any but needs to match
-        value = os.environ.get("DATABASE_URL").replace('postgres://', 'postgresql://')
+        value = os.environ.get("DATABASE_URL")
         if not value:
             raise ValueError("DATABASE_URL is not set")
         return value
