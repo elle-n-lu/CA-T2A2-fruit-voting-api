@@ -55,7 +55,7 @@ class Config(object):
         #         port=os.environ['RDS_PORT'],
         #         database=os.environ['RDS_DB_NAME'],)
         # else:
-        value = os.environ.get("DATABASE_URL").replace('postgres://', 'postgresql://')
+        value = os.environ.get("DATABASE_URL")
         if not value:
             raise ValueError("DATABASE_URL is not set")
         return value
