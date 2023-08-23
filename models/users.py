@@ -1,8 +1,8 @@
 from pkg_init import db, ma
 from marshmallow.validate import Length, Regexp
 from marshmallow import fields
-class User(db.Model):
-    __tablename__='users'
+class User_s(db.Model):
+    __tablename__='user_s'
     id=db.Column(db.Integer, primary_key=True)
     username=db.Column(db.String(),nullable=False)
     email = db.Column(db.String(),nullable=False, unique=True)
