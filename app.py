@@ -31,7 +31,8 @@ def setup():
     app.secret_key =  os.environ.get("SESSION_SECRET_KEY")
     CORS(app,origins=[
         "http://localhost:3000",
-        "http://127.0.0.1:3000"
+        "http://127.0.0.1:3000",
+        "https://show-booking.netlify.app/"
         ],supports_credentials=True)
 
     login_manager.login_view='admin.admin_login'
