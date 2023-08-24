@@ -1,5 +1,5 @@
 import os
-from flask import Flask, jsonify, render_template, session
+from flask import Flask, flash, jsonify, render_template, session
 from flask_cors import CORS
 from flask_login import current_user,login_required
 from marshmallow.exceptions import ValidationError
@@ -66,6 +66,11 @@ def setup():
     def unauthorised(err):
         session.clear()
         return {"error":"You are not authorised"}, 401
+    
+    @app.errorhandler(exc.IntegrityError)
+    def default_error(e):
+        flash({'error': e.description})
+        return jsonify({'error': e.description}), 400
     
     @app.errorhandler(BadRequest)
     def default_error(e):
