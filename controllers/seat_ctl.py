@@ -67,7 +67,7 @@ def filter_seat():
     stmt=db.select(Seat).filter_by(cinema_id=cinema_id, seat_number=seat_number)
     session=db.session.scalars(stmt)
     seats =  SeatSchema(many=True).dump(session)
-    return render_template('cinema/seats.html', seats=seats,seatnumbers= seatnumbers, cinemas=cinemas)
+    return render_template('cinema/seats.html', seats=seats,seatnumbers= seatnumbers, cinemas=cinemas,user=current_user.username)
 
 @app_seat.route("/seats",  methods=('GET', 'POST'))
 @login_required
@@ -77,7 +77,7 @@ def create_total_seat():
 
     totalseats = get_seats()
     seatnumbers = get_seat_numbers()
-    return render_template('cinema/seats.html', seats=totalseats,seatnumbers= seatnumbers, cinemas=cinemas)
+    return render_template('cinema/seats.html',user=current_user.username, seats=totalseats,seatnumbers= seatnumbers, cinemas=cinemas)
 
 @app_seat.route("/ajax_seats/<int:a>", methods=['GET'])
 def get_all_seats_by_cinema(a):
@@ -120,7 +120,7 @@ def delete_a_seat(cinema_id,id):
         db.session.delete(seat_check)
         db.session.commit()
         return redirect(url_for('seats.create_total_seat'))
-    return render_template('cinema/update_seat.html')
+    return render_template('cinema/update_seat.html', user=current_user.username)
 
 '''
 

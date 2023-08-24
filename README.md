@@ -4,6 +4,8 @@
 
 ## R1
 
+[Web](https://shownbooking-a10ea6e13f6b.herokuapp.com/admin)
+
 This is a movie booking management application allowing admin to login and update cinemas, movies, schedules and sessions in webpage supported by Jinja.
 This app uses Flask-login to do admin login and logout session management.
 
