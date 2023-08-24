@@ -32,7 +32,7 @@ def setup():
     CORS(app,origins=[
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-        "https://show-booking.netlify.app/"
+        "https://show-booking.netlify.app"
         ],supports_credentials=True)
 
 
