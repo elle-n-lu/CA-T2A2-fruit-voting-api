@@ -69,7 +69,7 @@ def setup():
     
     @app.errorhandler(exc.IntegrityError)
     def default_error(e):
-        flash({'error': e.orig.args[1]})
+        flash({'error': e.orig.args[0]})
         return jsonify({'error': e.description}), 400
     
     @app.errorhandler(BadRequest)
