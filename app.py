@@ -35,6 +35,7 @@ def setup():
         "https://show-booking.netlify.app/"
         ],supports_credentials=True)
 
+
     login_manager.login_view='admin.admin_login'
     login_manager.init_app(app)
     db.init_app(app)
