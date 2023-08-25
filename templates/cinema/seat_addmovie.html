@@ -69,9 +69,10 @@
             movie_target.remove(0)
         }
         $.ajax({
-            url: '/ajax_movies_bind_seat',
+            url: '/ajax_movies_bind_seat/'+cinema_val+'/'+seat_val,
             type: 'GET',
         }).done(function (data) {
+            data.unshift('')
             data.map(x => {
                 console.log('x',x)
 

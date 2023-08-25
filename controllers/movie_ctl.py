@@ -1,6 +1,7 @@
 
 from controllers.user_ctl import user_login_required
 from models.orders import Order
+from models.seats import Seat
 from models.movie_seat import Movie_Seat,MovieSeatSchema
 from models.sessions import Session, SessionSchema
 from controllers.seat_ctl import get_all_seats_by_cinema
@@ -8,8 +9,8 @@ from flask_jwt_extended import  get_jwt_identity, jwt_required
 from controllers.order_ctl import get_order_ss
 from controllers.cinema_ctl import get_cinemas
 from models.cinema import CinemaSchema
-from sqlalchemy import exc, select
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from sqlalchemy import exc, select, text
+from flask import Blueprint, flash, json, redirect, render_template, request, url_for
 from sqlalchemy import func
 from marshmallow.exceptions import ValidationError
 from controllers.user_ctl import owner_required
@@ -22,36 +23,13 @@ from flask_login import login_user,login_required,current_user, logout_user
 from sqlalchemy.sql import exists
 
 app_movie = Blueprint("movie", __name__)
-'''
 
-# create a movie only admin allowed
-@app_movie.route("/movies/all", methods=['POST'])
-@jwt_required()
-def create_movie(id):
-    # check admin login
-    admin_required()
-    # check if the cinema which the movie belong exist, error if not
-    cinema=Cinema.query.filter_by(id=id).first()
-    if not cinema:
-        return {"error":"cinema not exist"}
-    # add user data in db
-    movie = MovieSchema().load(request.form)
-    new_movie = Movie(
-        movie_name=movie['movie_name'],
-        introduction = movie['introduction'],
-        cinema_id=id
-    )
-    db.session.add(new_movie)
-    db.session.commit()
-    # return a value to show or use
-    return MovieSchema().dump(new_movie), 201
-'''
 
 '''
 in-use
 '''
 @app_movie.route("/ajax_movies_bind_seat", methods=['GET'])
-def filter_movie_notbind_seat():
+def filter_movie_seat():
     stmt=db.select(Movie)
     movie=db.session.scalars(stmt)
     posts =  MovieSchema(many=True).dump(movie)
@@ -59,7 +37,7 @@ def filter_movie_notbind_seat():
 
 @app_movie.route("/allmovies", methods=('GET', 'POST'))
 def all_movies():
-    posts = filter_movie_notbind_seat()
+    posts = filter_movie_seat()
     if request.method == 'POST':
         movie_name = request.form['movie_name']
         movie_poster = request.form['movie_poster']
@@ -76,14 +54,27 @@ def all_movies():
 
 '''
 suppose to filter the movie not in the select room in selected cinema
+
+SELECT m.*
+FROM movies m
+LEFT JOIN movie_seat_relation msr ON m.movie_id = msr.movie_id
+LEFT JOIN seats s ON msr.seat_id = s.seat_id
+WHERE s.seat_id IS NULL;
 '''
-# @app_movie.route("/ajax_movies_bind_seat/<int:a>/<int:b>", methods=['GET'])
-# def filter_movie_notbind_seat(a,b):
-#     stmt=exists().where(Movie.seat_id==b)
-#     movie=db.session.query(Movie).filter_by(cinema_id=a).filter(~stmt)
-#     posts =  MovieSchema(many=True).dump(movie)
-#     print('movi', movie)
-#     return posts
+@app_movie.route("/ajax_movies_bind_seat/<int:a>/<int:b>", methods=['GET'])
+def filter_movie_notbind_seat(a,b):
+    stmt = text("""
+        SELECT(m.movie_name, m.id)
+        FROM movies m
+        LEFT JOIN movie_seat msr ON m.id = msr.movie_id AND msr.seat_id =:seat_id AND msr.cinema_id=:cinema_id
+        WHERE msr.seat_id IS NULL;
+        """
+    ).params(seat_id=b,cinema_id=a)
+
+    movies = db.session.scalars(stmt).all()
+    movies_list = [{"movie_name": movie.split(',')[0].strip("('"), "id": int(movie.split(',')[1].strip("')"))} for movie in movies]
+    print("sas",movies)
+    return movies_list
 
 @app_movie.route("/ajax_movies_cinema/<int:a>", methods=['GET'])
 def get_all_movies_fromcinam(a):
