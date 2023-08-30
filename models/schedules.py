@@ -11,14 +11,16 @@ class Schedule(db.Model):
     #add
     seat_id = db.Column(db.Integer, db.ForeignKey("seats.id"), nullable=False)
 
-    sessions=db.relationship("Session", backref="schedules", cascade="all, delete")
+    # sessions=db.relationship("Session", backref="schedules", cascade="all, delete")
+    sessions=db.relationship("Session", back_populates="schedule")
 
 class ScheduleSchema(ma.Schema):
     schedule_date=fields.String(validate=Length(min=2))
     
     class Meta:
         fields=("id","schedule_date","sessions","movie_id","cinema_id","seat_id")
+    sessions=fields.List(fields.Nested("SessionSchema",exclude=("schedule",)))
+
     
-    sessions= fields.List(fields.Nested("SessionSchema"))
     
     

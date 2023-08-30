@@ -4,28 +4,36 @@
 <div class="py-2 mb-2" style="background-color: rgb(206, 208, 210);">
     Orders
 </div>
-    {% for order in orders %}
-    
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">id</th>
-                <th scope="col">movie_name</th>
-                <th scope="col">schedule</th>
-                <th scope="col">session</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for order in orders %}
-            <tr>
-                <th scope="row">{{ order['id'] }}</th>
-                <td>{{ order['movie_name'] }}</td>
-                <td>{{ order['schedule'] }}</td>
-                <td>{{ order['session'] }}</td>
-              </tr>
-              {% endfor %}
-        </tbody>
-    </table>
-    {% endfor %}
-    
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">id</th>
+            <th scope="col">user</th>
+            <th scope="col">cinema</th>
+            <th scope="col">movie</th>
+            <th scope="col">seat</th>
+            <th scope="col">session</th>
+            <th scope="col">total price</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <th scope="row">{{ order['id'] }}</th>
+            <td>{{ order['user']['username'] }}</td>
+            <td>{{ order['session']['cinema']['cinema_name'] }}</td>
+            <td>{{ order['session']['movie']['movie_name'] }}</td>
+            <td>{{ order['seat'] }}</td>
+            <td>{{ order['session']['session_time'] }}</td>
+            <td>$ {{ order['total_price'] }}</td>
+            <td><button>
+                <a href="{{ url_for('orders.delete_a_order',id=order['id'] ) }}">x</a>
+                </button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
 {% endblock %}

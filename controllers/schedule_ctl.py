@@ -13,26 +13,6 @@ from flask_login import login_required,current_user
 
 app_schedule = Blueprint("schedules", __name__)
 
-# create a schedule, only admin allowed
-@app_schedule.route("/cinema/<int:cinema_id>/movie/<int:movie_id>'/schedules", methods=['POST'])
-@jwt_required()
-def create_schedule(cinema_id, movie_id):
-    # check admin login
-    admin_required()
-    movie=Movie.query.filter_by(id=movie_id).first()
-    if not movie:
-        return {"error":"movie not exist"}
-    # add schedule data in db
-    schedule = ScheduleSchema().load(request.form)
-    new_schedule = Schedule(
-        schedule_date=schedule["schedule_date"],
-        movie_id = movie_id
-    )
-    db.session.add(new_schedule)
-    db.session.commit()
-    # return a value to show or use
-    return ScheduleSchema().dump(new_schedule), 201
-
 
 '''
 in-use

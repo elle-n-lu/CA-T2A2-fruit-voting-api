@@ -14,6 +14,7 @@ class Cinema(db.Model):
     
 
     orders=db.relationship("Order", backref="cinemas", cascade="all, delete")
+    sessions = db.relationship("Session", back_populates="cinema")
     
 class CinemaSchema(ma.Schema):
     cinema_name=fields.String(validate=Length(min=3))
@@ -22,6 +23,6 @@ class CinemaSchema(ma.Schema):
         fields=("id","cinema_name","movies","admin_id")
     
     movies= fields.List(fields.Nested("MovieSchema",exclude=('votes',"comments","schedules")))
-    orders= fields.List(fields.Nested("OrderSchema",exclude=("cinema_id",)))
+    # orders= fields.List(fields.Nested("OrderSchema",exclude=("cinema_id",)))
     
     

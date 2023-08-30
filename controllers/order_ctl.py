@@ -1,6 +1,6 @@
 from controllers.user_ctl import user_login_required
 from flask_jwt_extended import  jwt_required
-from flask import Blueprint, render_template, request
+from flask import Blueprint, redirect, render_template, request, url_for
 from pkg_init import db
 from controllers.admin_ctl import admin_required
 from controllers.user_ctl import owner_required
@@ -15,7 +15,7 @@ from sqlalchemy import func
 app_order = Blueprint("orders", __name__)
 
 @app_order.route('/orders/<int:sessionId>', methods=['GET'])
-def fetch_seats(sessionId):
+def fetch_sold_seats(sessionId):
     # orders=Order.query.filter_by(session_id=sessionId).first()
     # seats= OrderSchema(many=True,).dump(orders)
     stmt = (
@@ -43,6 +43,7 @@ def create_order(cinema_id, session_id):
     order = OrderSchema().load(request.form)
     new_order = Order(
         seat = order['seat'],
+        total_price=order['total_price'],
         user_id = user_id,
         cinema_id = cinema_id,
         admin_id= 1,
@@ -57,6 +58,7 @@ def create_order(cinema_id, session_id):
 views
 admin get all orders of all users
 '''
+@app_order.route("/orders/alll",methods=['GET'])
 def get_order_ss():
     stmt=db.select(Order)
     orders=db.session.scalars(stmt)
@@ -70,63 +72,20 @@ def get_orders():
     orderss = get_order_ss()
     return render_template('cinema/all_orders.html',orders=orderss,user=current_user.username)
 
+@app_order.route("/orders/users/<int:user_id>",methods=['GET'])
+def get_user_orders(user_id):
+    order_c=Order.query.filter_by(user_id=user_id)
+    orders= OrderSchema(many=True,exclude=("user",)).dump(order_c)
+    return orders
 
-def order_check(order_id):
-    order_check=Order.query.filter_by(id=order_id).first()
-    if not order_check:
-        return {"error":"order not exist"}
-    return order_check
 
+@app_order.route("/orders/<int:id>/delete",methods=('GET','POST'))
+@login_required
+def delete_a_order(id):
+    if request.method == 'POST':
+        order_check=Order.query.filter_by(id=id).first()
+        db.session.delete(order_check)
+        db.session.commit()
+        return redirect(url_for('orders.get_orders'))
+    return render_template('cinema/delete_order.html', user=current_user.username)
 
-'''
-# retrieve single order data
-@app_order.route("/orders/<int:order_id>", methods=['GET'])
-def get_order(order_id):
-    # check if order exist, error if not
-    order_c = order_check(order_id)
-    return OrderSchema().dump(order_c)
-
-# update single order
-@app_order.route("/orders/<int:order_id>",methods=['PUT'])
-@jwt_required()
-def update_order(order_id):
-    # check user authorization
-    owner_required()
-     # check if order exist , error if not
-    order_c=order_check(order_id)
-    # get use input
-    new_order= OrderSchema().load(request.form)
-    # update order 
-    order_c.movie_name=new_order["movie_name"]
-    order_c.schedule=new_order["schedule"]
-    order_c.session=new_order["session"]
-    order_c.seat=new_order["seat"]
-    db.session.commit()
-    return OrderSchema().dump(order_c), 201
-'''
-@app_order.route("/orders/<int:order_id>",methods=['PUT'])
-# @login_required
-def update_order(order_id):
-    # check if order exist , error if not
-    # user=current_user.username
-    order_c=order_check(order_id)
-    # get use input
-    new_order= OrderSchema().load(request.form)
-    # update order 
-    order_c.seat=new_order["seat"]
-    db.session.commit()
-    return OrderSchema().dump(order_c), 201
-
-# delete single order
-@app_order.route("/orders/<int:order_id>",methods=['DELETE'])
-# @jwt_required()
-def delete_order(order_id):
-    # check user authorization
-    # owner_required()
-
-    # check if order exist
-    order_c=order_check(order_id)
-    # delete order
-    db.session.delete(order_c)
-    db.session.commit()
-    return "order deleted"

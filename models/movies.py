@@ -21,6 +21,7 @@ class Movie(db.Model):
 
     schedules=db.relationship("Schedule", backref="movies", cascade="all, delete")
 
+    sessions = db.relationship("Session", back_populates="movie")
 
 
 class MovieSchema(ma.Schema):
@@ -31,4 +32,4 @@ class MovieSchema(ma.Schema):
     
     votes=fields.List(fields.Nested("VoteSchema"))
     comments=fields.List(fields.Nested("CommentSchema"))
-    schedules=fields.List(fields.Nested("ScheduleSchema"))
+    schedules=fields.List(fields.Nested("ScheduleSchema",exclude=('sessions',)))
