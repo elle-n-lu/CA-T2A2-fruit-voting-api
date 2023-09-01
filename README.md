@@ -2,16 +2,20 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-%2320232a.svg?style=for-the-badge&logo=PostgreSQL&logoColor=green)
 ![Jinja](https://img.shields.io/badge/Jinja-%2320232a.svg?style=for-the-badge&logo=Jinja&logoColor=green)
 
-## R1
+## § Website
 
-[Web](https://shownbooking-a10ea6e13f6b.herokuapp.com/admin)
+[Admin Platform](https://shownbooking-a10ea6e13f6b.herokuapp.com/admin)
+[User Platform](https://show-booking.netlify.app/)
+[User Platform Repo](https://github.com/elle-n-lu/movie-booking-front)
 
-This is a movie booking management application allowing admin to login and update cinemas, movies, schedules and sessions in webpage supported by Jinja.
+## § App Introduction
+
+This is a movie booking management application allowing admin to login, create and update cinemas, movies, schedules and sessions in webpage supported by Jinja.
 This app uses Flask-login to do admin login and logout session management.
 
-The project is based on the Code Academy's flask api assignment. 
+*The project is based on the api project for Code Academy's flask assignment. 
 
-## § Instructions
+## § Local Setup Instructions
 
 1. git clone this repo
 
@@ -23,7 +27,7 @@ The project is based on the Code Academy's flask api assignment.
 
         python3 -m pip install -r requirements.txt
 
-4. create .env file and set up DATABASE_URL and SECRET_KEY, MAILTRAP_SERVER, MAILTRAP_USERNAME, MAILTRAP_PASSWORD
+4. create .env file according to .env.example
 
 5. generate models and admin
 
