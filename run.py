@@ -23,11 +23,8 @@ if __name__ == "__main__":
         # db.drop_all()
         db.create_all()
         admin=Admin(
-            username = "admin",
-            email ="admin@email.com",
-            password = bcrypt.generate_password_hash("admin").decode("utf-8"),
-            admin=True
-        )
+            username = "admin",email ="admin@email.com",password = bcrypt.generate_password_hash("admin").decode("utf-8"),
+            admin=True)
         db.session.add(admin)
         db.session.commit()
         

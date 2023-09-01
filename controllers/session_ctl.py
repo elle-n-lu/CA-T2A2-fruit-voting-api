@@ -12,27 +12,6 @@ from flask_login import login_required,current_user
 
 
 app_session = Blueprint("sessions", __name__)
-'''
-# create a schedule, only admin allowed
-@app_session.route("/sessions", methods=['POST'])
-@jwt_required()
-def create_session(cinema_id, movie_id,schedule_id):
-    # check admin login
-    admin_required()
-    schedule=Schedule.query.filter_by(id=schedule_id).first()
-    if not schedule:
-        return {"error":"schedule not exist"}
-    # add schedule data in db
-    session = SessionSchema().load(request.form)
-    new_session = Session(
-        session_time=session["session_time"],
-        schedule_id = schedule_id
-    )
-    db.session.add(new_session)
-    db.session.commit()
-    # return a value to show or use
-    return SessionSchema().dump(new_session), 201
-'''
 
 def session_check(schedule_id,cinema_id, movie_id,session_id,seat_id):
     session_check=Session.query.filter_by(seat_id=seat_id,schedule_id=schedule_id,cinema_id=cinema_id,movie_id= movie_id,id=session_id).first()
@@ -58,12 +37,14 @@ def get_sessions():
     for time in range(1,13):
         all_sessions.append(str(time)+':00 PM')
     if request.method == 'POST':
+        price=request.form['price']
         cinema_id = request.form['cinema_id']
         schedule_id = request.form['schedule_id']
         movie_id = request.form['movie_id']
         session_time=request.form['session_time']
         seat_id=request.form['seat_id']
         new_session= Session(
+            price=price,
             schedule_id=schedule_id,
             cinema_id=cinema_id,
             movie_id=movie_id,
@@ -80,24 +61,6 @@ def get_sessions():
     movies=get_all_movies(cinemas[0]['id'],seats[0]['id'])
     return render_template('cinema/all_sessions.html',seats=seats,all_sessions=all_sessions,cinemas=cinemas,movies=movies,user=current_user.username)
 
-
-'''
-
-# update single session
-@app_session.route("/cinema/<int:cinema_id>/movie/<int:movie_id>/schedule/<int:schedule_id>/sessions/<int:session_id>",methods=['PUT'])
-@jwt_required()
-def update_session(session_id,movie_id,cinema_id):
-    # check admin authorization
-    admin_required()
-     # check if session exist , error if not
-    session_c = session_check(session_id)
-    # get use input
-    new_session= SessionSchema().load(request.form)
-    # update schedule 
-    session_c.session_time=new_session["session_time"]
-    db.session.commit()
-    return SessionSchema().dump(session_c), 201
-'''
 
 
 # delete single schedule
