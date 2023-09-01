@@ -11,13 +11,14 @@ class Comment(db.Model):
 
     movie_id=db.Column(db.Integer, db.ForeignKey("movies.id"), nullable=False)
     user_id=db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    
+    user = db.relationship("User", back_populates="comment")
 
 class CommentSchema(ma.Schema):
     class Meta:
-        fields=("id","parent_comment_id","message", "movie","user_id")
+        fields=("id","parent_comment_id","message", "movie","user_id","user")
     
     movie=fields.Nested("MovieSchema")
+    user=fields.Nested("UserSchema",exclude=('comments',"votes","password"))
     
     @validates('parent_comment_id')
     def validate_parent_comment_id(self, parent_comment_id):

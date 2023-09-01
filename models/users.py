@@ -13,6 +13,7 @@ class User(db.Model):
     votes=db.relationship("Vote", backref="users", cascade="all, delete")
     comments=db.relationship("Comment", backref="users", cascade="all, delete")
     orders=db.relationship("Order", back_populates="user")
+    comment=db.relationship("Comment", back_populates="user")
 
 class UserSchema(ma.Schema):
     username=fields.String(validate=Length(min=3))
