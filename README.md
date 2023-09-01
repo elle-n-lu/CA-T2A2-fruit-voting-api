@@ -5,10 +5,12 @@
 ## § Website
 
 [Admin Platform](https://shownbooking-a10ea6e13f6b.herokuapp.com/admin)
+
 [User Platform](https://show-booking.netlify.app/)
+
 [User Platform Repo](https://github.com/elle-n-lu/movie-booking-front)
 
-## § App Introduction
+## § Backend App Introduction
 
 This is a movie booking management application allowing admin to login, create and update cinemas, movies, schedules and sessions in webpage supported by Jinja.
 This app uses Flask-login to do admin login and logout session management.
