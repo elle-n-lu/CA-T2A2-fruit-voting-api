@@ -10,6 +10,8 @@
 
 [User Platform Repo](https://github.com/elle-n-lu/movie-booking-front)
 
+*admin login details in login_info.txt
+
 ## § Backend App Introduction
 
 This is a movie booking management application allowing admin to login, create and update cinemas, movies, schedules and sessions in webpage supported by Jinja.
